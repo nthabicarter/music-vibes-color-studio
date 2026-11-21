@@ -1,0 +1,9 @@
+MUSIC VIBES COLOR STUDIO — OFFLINE APP
+
+Upload the CONTENTS of this folder to the ROOT of a NEW GitHub repository (do not upload this ZIP as a file). Enable GitHub Pages: Settings > Pages > Deploy from a branch > main > /(root).
+
+Open the GitHub Pages URL on iPad Safari or phone browser while online. Wait for the message "All 65 pages saved for offline use" BEFORE turning off internet. Add to Home Screen using Share > Add to Home Screen (iPad/iPhone). Open the app from its Home Screen icon. Test in Airplane Mode with Wi-Fi off.
+
+Desktop: open index.html from this extracted folder for local offline use. Keep pages and thumbs folders together. For installable PWA on desktop, use the published HTTPS GitHub Pages site.
+
+Note: Offline storage can be cleared by the device; progress is saved on that device, not synced between devices. This package has not been tested on your physical iPad yet.

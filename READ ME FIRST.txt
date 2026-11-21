@@ -1,0 +1,5 @@
+Double-click index.html to open your coloring studio in Chrome, Edge, Firefox or Safari on a computer.
+It works with no internet. Keep this folder together (do not move index.html out of it).
+
+For iPad, iPhone or Android, use the web link in the START HERE PDF instead.
+For personal use only.

@@ -1,0 +1,22 @@
+{
+  "name": "Music Vibes Color Studio",
+  "short_name": "Music Vibes",
+  "description": "Interactive music-themed coloring studio. Offline after initial installation.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#120d2b",
+  "theme_color": "#120d2b",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
