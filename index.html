@@ -203,7 +203,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 
 <script>
 const PAGES=[{"id": "01", "title": "Anime Girl Group Karaoke Quartet"}, {"id": "02", "title": "Anime Music Festival Trio"}, {"id": "03", "title": "Anime Music Store Quartet"}, {"id": "04", "title": "Anime Vocalist in a Detailed Recording Studio"}, {"id": "05", "title": "Backstage Talent Show"}, {"id": "06", "title": "Beat Vibe Play - Music Doodle"}, {"id": "07", "title": "Bus Stop Besties - Good Music, Brighter Days"}, {"id": "08", "title": "Campfire Music by the Mountain Lake"}, {"id": "09", "title": "Music Scene 1"}, {"id": "10", "title": "Music Scene 2"}, {"id": "11", "title": "Music Scene 3"}, {"id": "12", "title": "Music Scene 4"}, {"id": "13", "title": "Music Scene 5"}, {"id": "14", "title": "Music Scene 6"}, {"id": "15", "title": "Music Scene 7"}, {"id": "16", "title": "Music Scene 8"}, {"id": "17", "title": "Confident Skater at the Outdoor Rink"}, {"id": "18", "title": "Cozy Karaoke Night with Friends"}, {"id": "19", "title": "Cozy Music Room Guitar Session"}, {"id": "20", "title": "Cozy Music-Themed Creative Workspace"}, {"id": "21", "title": "Cozy Trio in Winter Streetwear"}, {"id": "22", "title": "Cozy Vinyl Vibes Browsing"}, {"id": "23", "title": "Cozy Violinist’s Music Room"}, {"id": "24", "title": "Create Your Own Lyrics Music Sheet"}, {"id": "25", "title": "Create Your Playlist"}, {"id": "26", "title": "Dance Music Doodle Poster"}, {"id": "27", "title": "Dancing Beats"}, {"id": "28", "title": "Dreamy Music Studio Songwriting"}, {"id": "29", "title": "Dreamy Rooftop Night"}, {"id": "30", "title": "Dynamic Dance Studio Trio"}, {"id": "31", "title": "Energetic Music Doodle Collage"}, {"id": "32", "title": "Energetic Music Doodle Poster"}, {"id": "33", "title": "Girl Band Music Studio"}, {"id": "34", "title": "Good Music, Better Days Piano Room"}, {"id": "35", "title": "Good Music, Brighter Days"}, {"id": "36", "title": "Good Music, Brighter Days 2"}, {"id": "37", "title": "Good Music, Good Vibes Party"}, {"id": "38", "title": "Good Music, Good Vibes"}, {"id": "39", "title": "Good Music, Happier Friends"}, {"id": "40", "title": "Joyful Carpool Karaoke Duo"}, {"id": "41", "title": "Joyful Dance in a Music-Filled Bedroom"}, {"id": "42", "title": "Joyful DJ Concert"}, {"id": "43", "title": "Joyful Girls’ Music Studio Jam"}, {"id": "44", "title": "Joyful Singer in a Cozy Music Room"}, {"id": "45", "title": "Lakeside Friends Picnic"}, {"id": "46", "title": "Life Is Better With Music"}, {"id": "47", "title": "Manga Music Store Headphone Hunt"}, {"id": "48", "title": "Monochrome Music Collage"}, {"id": "49", "title": "Monochrome Music Store Interior"}, {"id": "50", "title": "Music Café Dreamy Sketch Session"}, {"id": "51", "title": "Music Café - Notes, Coffee, and Cozy Corners"}, {"id": "52", "title": "Music Festival Doodle Ticket"}, {"id": "53", "title": "Music Maker’s Desk - Coloring-Page Soundscape"}, {"id": "54", "title": "Music Vibes Soundwave Doodle"}, {"id": "55", "title": "Musician’s About Me Poster"}, {"id": "56", "title": "Outdoor Pop-Rock Girl Band Concert"}, {"id": "57", "title": "Rainy Day Music Journal Cozy Corner"}, {"id": "58", "title": "Roller Skating Queens by the Palms"}, {"id": "59", "title": "Roller-Skating Music Crew on the Boardwalk"}, {"id": "60", "title": "Rooftop Music, City Lights"}, {"id": "61", "title": "Sketch, Color, Repeat Doodle Cover"}, {"id": "62", "title": "Teen Music Room Jam Session"}, {"id": "63", "title": "This or That Music Edition Poster"}, {"id": "64", "title": "Violinist in a Flowering Garden"}, {"id": "65", "title": "You Can’t Stop the Beat Poster"}];
-const OFFLINE=true;
+const OFFLINE=false;
 window.PG=window.PG||{};
 function pageSrc(id){if(!OFFLINE)return Promise.resolve('pages/'+id+'.webp');if(PG[id])return Promise.resolve(PG[id]);return new Promise((res,rej)=>{const s=document.createElement('script');s.src='pages/'+id+'.js';s.onload=()=>PG[id]?res(PG[id]):rej(new Error('x'));s.onerror=()=>rej(new Error('x'));document.head.appendChild(s);});}
 const GROUPS={
@@ -577,32 +577,13 @@ $('pr').onclick=async()=>{
 
 /* ---------- offline ---------- */
 async function warmCache(){
-  if(location.protocol==='file:')return;
-  if(!('serviceWorker' in navigator)||!('caches' in window)){
-    banner('Offline installation is not supported in this browser');return;
-  }
-  try{
-    await navigator.serviceWorker.register('./service-worker.js');
-    await navigator.serviceWorker.ready;
-    const cache=await caches.open('music-vibes-offline-v3');
-    const jobs=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
-    for(const p of PAGES){jobs.push('pages/'+p.id+'.js','thumbs/'+p.id+'.jpg');}
-    let success=0,fail=0;
-    banner('Preparing offline pages…');
-    for(let i=0;i<jobs.length;i++){
-      const u=jobs[i];
-      try{
-        if(!(await cache.match(u))){const r=await fetch(u,{cache:'reload'});if(!r.ok)throw Error('HTTP '+r.status);await cache.put(u,r);}
-        success++;
-      }catch(e){fail++;}
-      if(i%8===0){$('banner').textContent='Saving for offline use… '+Math.round((i+1)/jobs.length*100)+'%';}
-    }
-    banner(fail===0?'All 65 pages saved for offline use ✓':'Offline setup incomplete: '+fail+' files missing. Connect to Wi-Fi and reopen.',6000);
-  }catch(e){banner('Offline setup needs a secure website connection',6000);}
+ if(!('serviceWorker' in navigator)||!('caches' in window))return;
+ try{banner('Preparing offline pages — keep this open');await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;const c=await caches.open('music-vibes-v3');const jobs=PAGES.flatMap(p=>['pages/'+p.id+'.webp','thumbs/'+p.id+'.jpg']);const checks=await Promise.all(jobs.map(u=>c.match(u)));if(checks.every(Boolean))banner('Ready to use offline ✓',5000);else banner('Offline setup incomplete. Refresh while online.',8000);}catch(e){banner('Offline setup incomplete. Refresh while online.',8000);}
 }
+
 /* ---------- init ---------- */
 buildPacks();buildPalette();updSlots();setTool('fill');updSound();
-buildGallery().then(()=>{if(location.protocol!=='file:')warmCache();});
+buildGallery().then(()=>{if(OFFLINE){}else if(location.protocol!=='file:')warmCache();else{const e=$('gerr');e.style.display='block';e.innerHTML='<b>Open this from its web link.</b> Saved files opened straight from Files or AirDrop cannot color the pages. Follow the START HERE guide to get your link.';}});
 </script>
 </body>
 </html>
