@@ -119,7 +119,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 @media(min-width:900px){.pal.big{grid-template-rows:repeat(4,38px)}.pal{grid-template-rows:repeat(2,38px)}}
 @media(max-width:560px){.tb{width:54px}.ib .lb{display:none}.pal.big{grid-template-rows:repeat(3,36px)}.sw{width:36px;height:36px}}
 @media(max-width:430px){.tb{width:45px;font-size:9.5px;gap:1px}.tb svg{width:20px;height:20px}.tools{gap:4px}.vsep{margin:0}}
-.banner{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000d;border-radius:99px;padding:8px 16px;font-size:13px;z-index:50;display:none;font-weight:700}
+.banner{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000d;border-radius:99px;padding:8px 16px;font-size:13px;z-index:50;display:none;font-weight:700;pointer-events:none}
 .banner.on{display:block}
 .printimg{display:none}
 @media print{body>*:not(.printimg){display:none!important}.printimg{display:block!important;width:100%;max-height:100vh;object-fit:contain}@page{margin:8mm}}
@@ -287,7 +287,7 @@ async function renderGrid(){
     let src='thumbs/'+p.id+'.jpg';
     if(started.has(p.id)){const pv=await get('prev:'+p.id);if(pv){urls[p.id]=URL.createObjectURL(pv);src=urls[p.id];}}
     b.innerHTML='<span class="n">'+(+p.id)+'</span><span class="dn">'+(finished.has(p.id)?'Finished ★':'In progress')+'</span><img class="im" loading="lazy" alt="" src="'+src+'"><div class="t"></div>';
-    b.querySelector('.t').textContent=p.title;
+    b.querySelector('.t').textContent=p.title;const thumb=b.querySelector('img');thumb.onerror=()=>{thumb.onerror=null;thumb.src='pages/'+p.id+'.webp';};
     b.onclick=()=>openPage(p.id);g.appendChild(b);
   }
   $('gstat').innerHTML='<b>'+finished.size+'</b> finished<br><b>'+started.size+'</b> in progress';
@@ -357,7 +357,7 @@ async function openPage(id){
     Art=segment(gray,W,H);
   }catch(e){
     $('ed').classList.remove('on');$('gal').classList.add('on');
-    banner('This page could not load. Open the app from its web link (not from a saved file).',6000);return;
+    console.error('Page load failed',id,e);banner('Page '+id+' could not load: '+e.message+'. Try refreshing while online.',8000);return;
   }
   lineEl.src=psrc;
   stage.style.width=W+'px';stage.style.height=H+'px';
@@ -578,7 +578,7 @@ $('pr').onclick=async()=>{
 /* ---------- offline ---------- */
 async function warmCache(){
  if(!('serviceWorker' in navigator)||!('caches' in window))return;
- try{banner('Preparing offline pages — keep this open');await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;const c=await caches.open('music-vibes-v3');const jobs=PAGES.flatMap(p=>['pages/'+p.id+'.webp','thumbs/'+p.id+'.jpg']);const checks=await Promise.all(jobs.map(u=>c.match(u)));if(checks.every(Boolean))banner('Ready to use offline ✓',5000);else banner('Offline setup incomplete. Refresh while online.',8000);}catch(e){banner('Offline setup incomplete. Refresh while online.',8000);}
+ try{banner('Preparing offline pages — keep this open');await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});await tmo(navigator.serviceWorker.ready,15000,null);const c=await caches.open('music-vibes-v4');const jobs=PAGES.flatMap(p=>['pages/'+p.id+'.webp','thumbs/'+p.id+'.jpg']);const checks=await Promise.all(jobs.map(u=>c.match(u)));if(checks.every(Boolean))banner('Ready to use offline ✓',5000);else banner('Offline setup incomplete. Refresh while online.',8000);}catch(e){banner('Offline setup incomplete. Refresh while online.',8000);}
 }
 
 /* ---------- init ---------- */
